@@ -28,3 +28,5 @@ shp_brazil = gpd.read_file('.data/shapefiles/brazil.shp')
 states = [dict(id=i, name=row['NOMEUF2'], acron=row['SIGLAUF3'], area=row['area'],
                center=(row['geometry'].centroid.x, row['geometry'].centroid.y), geom=row['geometry'])
           for i, row in shp_brazil.iterrows()]
+
+DIR=".data/339"

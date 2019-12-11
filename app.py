@@ -49,7 +49,7 @@ def display_page(pathname):
 )
 def update_mapview_states(state, style):
     FILE_PATH = str(pathlib.Path(__file__).parent.resolve())
-    path = '.data/csv/glm' #path of files GLM
+    path = os.path.join(const.DIR, 'glm') #path of files GLM
     path = os.path.join(FILE_PATH, path)
     files = sorted(os.listdir(path))
     files = list(filter(lambda x: x.endswith('.csv'), files))[-3:]
@@ -70,7 +70,7 @@ def update_mapview_states(state, style):
         print('GLM file: ', file)
         df = pd.read_csv(file)
         dfs.append(df)
-        print(df.head())
+        # print(df.head())
         x = df['flash_lon'].values
         y = df['flash_lat'].values
 
@@ -84,14 +84,14 @@ def update_mapview_states(state, style):
         except KeyError:
             temp = 0
         total.append(temp)
-        print(group)
+        # print(group)
         lightning_by_km = {}
         for index, row in zip(states, s_lightnings):
             area = list(filter(lambda x: x['name'] == index, const.states ))[0]['area']
             # lightning_by_km['%s (%.2fkm²)'%(index, area)] = row/area
             lightning_by_km[index] = row / area
 
-        print('color---->>> ', )
+        # print('color---->>> ', )
         km_area.append(
             go.Bar(y=list(lightning_by_km.values()), x=list(lightning_by_km.keys()),
                    name='%s-%s minutos atrás'%(time-10, time),  marker=dict(color=colors[color]))
@@ -155,9 +155,12 @@ def update_mapview_states(state, style):
     )
     g_time_serie.update_layout(
         template='plotly_white',
-        title=dict(text="Total de raios computados nos últimos 30 minutos nos estados brasileiros<br>%s-%s-%s %s:%s UTC"% (str(now.day).zfill(2),
-            str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2), str(now.minute).zfill(2)),
-                   xanchor="center", y=0.9, x=0.5, yanchor="top"),
+        # title=dict(text="Total de raios computados nos últimos 30 minutos nos estados brasileiros<br>%s-%s-%s %s:%s UTC"% (str(now.day).zfill(2),
+        #     str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2), str(now.minute).zfill(2)),
+        #            xanchor="center", y=0.9, x=0.5, yanchor="top"),
+        title=dict(
+            text="Total de raios computados nos últimos 30 minutos nos estados brasileiros<br>05-12-19 12:40 UTC",
+            xanchor="center", y=0.9, x=0.5, yanchor="top"),
         font=dict(color="rgb(25, 36, 68)"),
     )
 
@@ -184,9 +187,10 @@ def update_mapview_states(state, style):
             go.layout.Annotation(text='%.1f raios/km²'%(s_total/state['area']),showarrow=False),
         ],
         title=dict(
-            text='%s nos últimos 30 minutos<br>%s-%s-%s %s:%s UTC' % (state['name'],
-                str(now.day).zfill(2), str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
-                str(now.minute).zfill(2)),
+            # text='%s nos últimos 30 minutos<br>%s-%s-%s %s:%s UTC' % (state['name'],
+            #     str(now.day).zfill(2), str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
+            #     str(now.minute).zfill(2)),
+            text='%s nos últimos 30 minutos<br>05-12-19 12:40 UTC'%(state['name']),
             xanchor="center",
             y=0.9, x=0.5, yanchor="top"
         ),
@@ -205,11 +209,16 @@ def update_mapview_states(state, style):
         margin=dict(l=0, r=0, t=0, b=0),
         # height=500,
         # width=1220,
+        # annotations=[
+        #     go.layout.Annotation(text='GOES-16: Produto Flash do GLM. %s-%s-%s %s:%s UTC'%(str(now.day).zfill(2),
+        #                          str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
+        #                          str(now.minute).zfill(2)), showarrow=False, y=0.05, x=.990, borderpad=10,
+        #                          font=dict(color='#FFFFFF'),  bgcolor="rgba(31, 44, 86, .2)"),
+        # ],
         annotations=[
-            go.layout.Annotation(text='GOES-16: Produto Flash do GLM. %s-%s-%s %s:%s UTC'%(str(now.day).zfill(2),
-                                 str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
-                                 str(now.minute).zfill(2)), showarrow=False, y=0.05, x=.990, borderpad=10,
-                                 font=dict(color='#FFFFFF'),  bgcolor="rgba(31, 44, 86, .2)"),
+            go.layout.Annotation(text='GOES-16: Produto Flash do GLM. 05-12-19 12:40 UTC',
+                                 showarrow=False, y=0.05, x=.990, borderpad=10,
+                                 font=dict(color='#FFFFFF'), bgcolor="rgba(31, 44, 86, .2)"),
         ],
         mapbox=go.layout.Mapbox(
             accesstoken=mapbox_access_token,
@@ -231,9 +240,10 @@ def update_mapview_states(state, style):
     g_lightning_by_state = go.Figure(data=total_l)
     g_lightning_by_state.update_layout(
         title=dict(
-            text='Total de raios nos estados com maior incidência nos últimos 30 minutos<br>%s-%s-%s %s:%s UTC' % (
-                str(now.day).zfill(2), str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
-                str(now.minute).zfill(2)),
+            # text='Total de raios nos estados com maior incidência nos últimos 30 minutos<br>%s-%s-%s %s:%s UTC' % (
+            #     str(now.day).zfill(2), str(now.month).zfill(2), str(now.year).zfill(2), str(now.hour).zfill(2),
+            #     str(now.minute).zfill(2)),
+            text='Total de raios nos estados com maior incidência nos últimos 30 minutos<br>05-12-19 12:40 UTC',
             xanchor="center",
             y=0.9, x=0.5, yanchor="top"
         ),
